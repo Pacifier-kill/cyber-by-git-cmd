@@ -1,0 +1,263 @@
+import { Course } from '../types';
+
+export const COURSES: Course[] = [
+  {
+    id: 'ms-office',
+    name: 'Basic Computer & MS Office',
+    categoryTag: 'MS OFFICE',
+    categoryType: 'office',
+    description: 'Develop essential digital and office productivity skills, including Microsoft Word, Excel, PowerPoint, document management, and professional workplace applications.',
+    fullOverview: 'Designed for beginners, students, and professionals aiming to master computer fundamentals, Windows OS, high-speed typing, Microsoft Office suite (Word, Excel formulas, PowerPoint presentations), cloud storage, and email etiquette.',
+    duration: '2 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 7000,
+    badge: 'Online & Campus Classes',
+    topics: ['Computer Basics', 'MS Word', 'MS Excel', 'PowerPoint'],
+    curriculum: [
+      'Operating System Essentials & File Management',
+      'Advanced MS Word: Formatting, Documentation, Tables & Printing',
+      'MS Excel: Data Entry, Mathematical Formulas, VLOOKUP & Charts',
+      'MS PowerPoint: Professional Presentation Design & Animations',
+      'Email Etiquette, Google Drive, & Workplace Cloud Tools'
+    ],
+    gradient: 'from-blue-600/30 via-indigo-600/20 to-transparent',
+    accentColor: '#6899ff',
+    iconName: 'FileSpreadsheet'
+  },
+  {
+    id: 'typing',
+    name: 'Typing Course',
+    categoryTag: 'TYPING',
+    categoryType: 'typing',
+    description: 'Enhance your typing speed, accuracy, efficiency, and keyboard proficiency for academic, professional, and administrative environments.',
+    fullOverview: 'Achieve 40+ WPM with touch typing methodology in English, Urdu, and Sindhi. Includes keyboard ergonomics, speed tests, accuracy training, and clerical assessment preparation.',
+    duration: '2 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 5000,
+    badge: 'High Demand',
+    topics: ['Urdu Typing', 'English Typing', 'Sindhi Typing', 'Speed & Accuracy'],
+    curriculum: [
+      'Touch Typing Fundamentals & Home Row Mastery',
+      'Number Pad & Special Characters Speed Drills',
+      'Urdu InPage & Unicode Typing Practice',
+      'Sindhi Language Keyboard Layout Training',
+      'Timed Examinations & Government Test Prep'
+    ],
+    gradient: 'from-emerald-600/30 via-teal-600/20 to-transparent',
+    accentColor: '#43e97b',
+    iconName: 'Keyboard'
+  },
+  {
+    id: 'graphic-designing',
+    name: 'Graphic Designing with AI',
+    categoryTag: 'DESIGNING',
+    categoryType: 'design',
+    description: 'Master professional graphic design principles alongside cutting-edge AI tools to create visually compelling designs, branding materials, social media content, marketing creatives, and high-quality digital assets.',
+    fullOverview: 'Comprehensive training in Adobe Photoshop, Adobe Illustrator, and generative AI design tools (Midjourney, Canva AI, Firefly). Learn typography, color theory, brand identities, and commercial print design.',
+    duration: '2.5 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 10000,
+    badge: 'Includes AI Tools',
+    topics: ['Adobe Illustrator', 'Adobe Photoshop', 'Logo Design', 'Poster Design'],
+    curriculum: [
+      'Vector Graphics in Illustrator: Pen Tool, Shapes, Logos & Vectors',
+      'Raster Image Editing in Photoshop: Photo Retouching & Compositing',
+      'Generative AI for Designers: Prompting, Concept Art, & Firefly',
+      'Social Media Ads, Banner & Billboard Layouts',
+      'Client Portfolio Building & Freelance Marketplaces (Fiverr/Upwork)'
+    ],
+    gradient: 'from-pink-600/30 via-rose-600/20 to-transparent',
+    accentColor: '#ff6584',
+    iconName: 'Palette'
+  },
+  {
+    id: 'shopify',
+    name: 'Shopify E-Commerce',
+    categoryTag: 'E-COMMERCE',
+    categoryType: 'ecommerce',
+    description: 'Learn to build, customize, manage, and optimize professional e-commerce stores using Shopify.',
+    fullOverview: 'From niche research to sourcing, store creation, payment gateway integration, dropshipping, local e-commerce in Pakistan, and automated order fulfillment.',
+    duration: '3 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 15000,
+    badge: 'New Course',
+    topics: ['Store Setup', 'Product Management', 'Payment Integration', 'Customer Service'],
+    curriculum: [
+      'E-Commerce Business Models & Product Hunting Strategies',
+      'Shopify Store Setup, Theme Customization & Mobile Optimization',
+      'Payment Gateway Integration (Cash on Delivery, Stripe, Local Gateways)',
+      'Inventory, Shipping, Order Tracking & Supplier Management',
+      'Scaling with Apps, Conversions & Abandoned Cart Recovery'
+    ],
+    gradient: 'from-amber-600/30 via-yellow-600/20 to-transparent',
+    accentColor: '#f59e0b',
+    iconName: 'ShoppingBag'
+  },
+  {
+    id: 'facebook-meta-ads',
+    name: 'Facebook And Meta Ads',
+    categoryTag: 'FACEBOOK ADS',
+    categoryType: 'marketing',
+    description: 'Learn to design, launch, manage, and optimize high-performing advertising campaigns across Facebook and Instagram.',
+    fullOverview: 'Master Meta Business Suite, Ads Manager, audience targeting, pixel tracking, A/B testing, retargeting funnels, and ROAS optimization for both local stores and international clients.',
+    duration: '3 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 15000,
+    badge: 'High ROI Skill',
+    topics: ['Campaign Setup', 'Audience Targeting', 'Ad Creation', 'Performance Analysis'],
+    curriculum: [
+      'Meta Business Manager Setup & Account Verification',
+      'Campaign Objectives: Leads, Traffic, Sales & Engagement',
+      'Targeting Precision: Demographics, Interests & Lookalike Audiences',
+      'Meta Pixel Installation, Conversions API & Event Tracking',
+      'Ad Creative Copywriting, Video Hooks & Performance Analytics'
+    ],
+    gradient: 'from-purple-600/30 via-violet-600/20 to-transparent',
+    accentColor: '#a855f7',
+    iconName: 'Megaphone'
+  },
+  {
+    id: 'crypto-forex',
+    name: 'Crypto & Forex Technical Analysis',
+    categoryTag: 'CRYPTO & FOREX',
+    categoryType: 'trading',
+    description: 'Beginner to Advanced. Develop advanced skills in chart analysis, technical indicators, market trends, trading strategies, and professional risk management.',
+    fullOverview: 'A disciplined trading masterclass covering candlestick price action, support & resistance, moving averages, RSI, MACD, Fibonacci retracements, Binance, MT4/MT5, and risk-to-reward management.',
+    duration: '3 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 37500,
+    badge: 'Beginner to Advance',
+    topics: ['Chart Patterns', 'Indicator Usage', 'Market Analysis', 'Risk Management'],
+    curriculum: [
+      'Financial Markets Foundation: Crypto vs Forex vs Commodities',
+      'Candlestick Anatomy, Chart Patterns & Market Structure',
+      'Technical Indicators: RSI, Moving Averages, Bollinger Bands & MACD',
+      'Trading Psychology & Strict Risk Management Rules',
+      'Live Trading Sessions, Journaling & Strategy Backtesting'
+    ],
+    gradient: 'from-cyan-600/30 via-blue-600/20 to-transparent',
+    accentColor: '#06b6d4',
+    iconName: 'TrendingUp'
+  },
+  {
+    id: 'web-development',
+    name: 'Web Development',
+    categoryTag: 'WEB DEV',
+    categoryType: 'development',
+    description: 'Master the fundamentals of modern web development, including website design, coding, functionality, feature integration, and performance optimization.',
+    fullOverview: 'Become a skilled front-end web developer building responsive, clean websites using semantic HTML5, modern CSS3 (Flexbox, Grid), JavaScript ES6+, interactive DOM manipulation, and deployment on Git/Vercel.',
+    duration: '3 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 20000,
+    badge: 'Hands-on Projects',
+    topics: ['HTML Structure', 'CSS Styling', 'JavaScript', 'Responsive UI'],
+    curriculum: [
+      'Semantic HTML5 & Modern Web Standards',
+      'CSS3 Styling, Flexbox, CSS Grid & Responsive Media Queries',
+      'JavaScript Fundamentals: Variables, Functions, Loops & Arrays',
+      'DOM Manipulation, Event Listeners & Interactive Components',
+      'Portfolio Websites Deployment on GitHub & Netlify/Vercel'
+    ],
+    gradient: 'from-orange-600/30 via-red-600/20 to-transparent',
+    accentColor: '#f97316',
+    iconName: 'Code'
+  },
+  {
+    id: 'python-programming',
+    name: 'Python Programming',
+    categoryTag: 'PYTHON',
+    categoryType: 'programming',
+    description: "Learn Python, one of the world's most versatile programming languages, and develop practical skills for software development, web applications, automation, data-driven solutions, and artificial intelligence.",
+    fullOverview: 'From zero coding to writing Python scripts, object-oriented software, working with files, databases (SQLite), data analysis libraries, and automation bots.',
+    duration: '3 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 23000,
+    badge: 'Most Popular',
+    topics: ['Basic Python', 'File Handling', 'Database', 'OOP'],
+    curriculum: [
+      'Python Syntax, Data Types, Conditionals & Loops',
+      'Data Structures: Lists, Tuples, Dictionaries & Sets',
+      'Functions, Modules, Packages & Error Handling',
+      'Object-Oriented Programming (Classes, Objects, Inheritance)',
+      'Database Connectivity, File I/O & Automation Projects'
+    ],
+    gradient: 'from-yellow-500/30 via-amber-600/20 to-transparent',
+    accentColor: '#eab308',
+    iconName: 'Terminal'
+  },
+  {
+    id: 'cpp-programming',
+    name: 'C++ Programming',
+    categoryTag: 'C++',
+    categoryType: 'programming',
+    description: 'Master the fundamentals of C++ programming, including logical thinking, conditional statements, problem-solving, and core programming concepts. Gain the foundation required to develop software, applications, games, and other high-performance computer programs.',
+    fullOverview: 'The gold standard for computer science students and software engineers. Deep dive into algorithms, memory management, pointers, and robust object-oriented programming.',
+    duration: '3 Months',
+    classesPerWeek: '2 Classes/Week',
+    fee: 25000,
+    badge: 'Core CS Foundations',
+    topics: ['Basic C++', 'OOP', 'Pointers', 'File Handling'],
+    curriculum: [
+      'C++ Syntax, Control Structures, Loops & Functions',
+      'Arrays, Strings, Pointers & Dynamic Memory Allocation',
+      'Object-Oriented Programming: Encapsulation, Polymorphism & Abstraction',
+      'File Streams, Exception Handling & Data Storage',
+      'Algorithms, Data Structures Prep & Problem Solving'
+    ],
+    gradient: 'from-purple-600/30 via-indigo-600/20 to-transparent',
+    accentColor: '#818cf8',
+    iconName: 'Cpu'
+  }
+];
+
+export const SATISFACTION_METRICS = [
+  { course: 'Typing Course', percentage: 99, color: 'from-emerald-500 to-teal-500' },
+  { course: 'Basic Computer & MS Office', percentage: 98, color: 'from-blue-500 to-indigo-600' },
+  { course: 'Graphic Designing with AI', percentage: 97, color: 'from-pink-500 to-rose-600' },
+  { course: 'Shopify E-Commerce', percentage: 96, color: 'from-amber-500 to-orange-600' },
+  { course: 'Python Programming', percentage: 96, color: 'from-yellow-500 to-amber-600' },
+  { course: 'Web Development', percentage: 95, color: 'from-orange-500 to-red-600' },
+  { course: 'Facebook Meta Ads', percentage: 95, color: 'from-purple-500 to-fuchsia-600' },
+  { course: 'Crypto & Forex Technical Analysis', percentage: 94, color: 'from-cyan-500 to-blue-600' },
+  { course: 'C++ Programming', percentage: 94, color: 'from-indigo-500 to-purple-600' }
+];
+
+export const ACADEMY_INFO = {
+  name: 'Cyber Nova Computer Academy',
+  phone: '0319-8647809',
+  phoneInternational: '+923198647809',
+  whatsappNumber: '923198647809',
+  email: 'cybernovacomputeracademy@gmail.com',
+  address: 'Flat No. 31, 2nd Floor Shah Qayam Co-operative Society, Soldier Bazaar, Karachi',
+  plusCode: 'V2JH+379',
+  batch: 'Batch 2026 Admissions Open',
+  easypaisaAccount: '0319-8647809',
+  easypaisaTitle: 'Cyber Nova Academy / M. Ali',
+  jazzcashAccount: '0319-8647809',
+  jazzcashTitle: 'Cyber Nova Academy / M. Ali',
+  bankName: 'Meezan Bank Ltd.',
+  bankAccountTitle: 'Cyber Nova Computer Academy',
+  bankAccountNumber: '0101-0108924512',
+  bankIBAN: 'PK36MEZN0001010108924512',
+  bankAccounts: {
+    nbp: {
+      accountTitle: 'Cyber Nova Computer Academy',
+      accountNumber: '4192083719',
+      iban: 'PK12NBPA0000004192083719',
+      branch: 'Soldier Bazaar Branch, Karachi'
+    },
+    easypaisa: {
+      accountTitle: 'Cyber Nova Academy / M. Ali',
+      mobileNumber: '0319-8647809'
+    },
+    jazzcash: {
+      accountTitle: 'Cyber Nova Academy / M. Ali',
+      mobileNumber: '0319-8647809'
+    },
+    meezan: {
+      accountTitle: 'Cyber Nova Computer Academy',
+      accountNumber: '0101-0108924512',
+      iban: 'PK36MEZN0001010108924512'
+    }
+  }
+};

@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-syne: 'Syne', sans-serif;
+    --font-dmsans: 'DM Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-dmsans);
+  }
+
+  h1, h2, h3, .font-syne {
+    font-family: var(--font-syne);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #6c63ff;
+  border-radius: 3px;
+}
+
+/* Glowing text effects */
+.glow-emerald {
+  color: #02fd88;
+  text-shadow: 
+    0 0 5px #00ff88,
+    0 0 10px #05e27b,
+    0 0 20px rgb(4, 224, 78);
+}
+
+.glow-purple {
+  text-shadow: 0 0 25px rgba(108, 99, 255, 0.5);
+}
+
+/* Pulse animation */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+

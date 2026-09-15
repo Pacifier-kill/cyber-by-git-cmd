@@ -1,0 +1,6 @@
+{
+  "name": "Cyber Nova Computer Academy",
+  "description": "Pakistan's premier coding and IT institute offering hands-on programming courses, online registration, fee payment, and certificate verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
