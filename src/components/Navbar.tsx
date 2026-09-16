@@ -65,6 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigateSection, activeSection
           href="/"
           className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-none shrink-0"
         >
+          <img src="logo.jpg" alt="" />
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#6c63ff] via-[#818cf8] to-[#43e97b] p-[2px] shadow-lg shadow-[#6c63ff]/20">
             <div className="w-full h-full bg-[#111118] rounded-[10px] flex items-center justify-center group-hover:bg-[#1a1a26] transition-colors">
               <GraduationCap className="w-5 h-5 text-[#6c63ff] group-hover:scale-110 transition-transform" />
@@ -146,19 +147,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigateSection, activeSection
               </Link>
             </>
           )}
-
-          {/* Admin Panel Link */}
-          <Link
-            href="/admin"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              pathname === '/admin'
-                ? 'text-white bg-[#6c63ff]/20 border border-[#6c63ff]/50'
-                : 'text-[#888899] hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-[#818cf8]" />
-            <span>Admin Panel</span>
-          </Link>
         </div>
 
         {/* Desktop Action Buttons & Auth */}

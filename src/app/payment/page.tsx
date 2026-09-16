@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { 
   ArrowLeft, 
   Copy, 
@@ -13,14 +13,11 @@ import {
   Download, 
   Printer, 
   CheckCircle2,
-  Smartphone,
   CreditCard,
-  GraduationCap,
   AlertCircle,
   Lock,
   UserCheck,
   FileEdit,
-  Sparkles,
   Search
 } from 'lucide-react';
 import { ACADEMY_INFO } from '../../data/courses';
@@ -30,7 +27,6 @@ import { Footer } from '../../components/Footer';
 
 function PaymentContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const { courses } = useCourses();
 
   // Check URL params
@@ -54,8 +50,10 @@ function PaymentContent() {
   const [selectedCourseName, setSelectedCourseName] = useState('Basic Computer & MS Office');
   const [selectedFee, setSelectedFee] = useState(7000);
 
-  const [paymentMethod, setPaymentMethod] = useState<'nbp' | 'easypaisa' | 'jazzcash' | 'meezan'>('nbp');
+  // Payment channel restricted strictly to NBP
+  const paymentMethod = 'NBP';
   const [transactionId, setTransactionId] = useState('');
+  const [verificationError, setVerificationError] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [voucherGenerated, setVoucherGenerated] = useState(false);
@@ -63,7 +61,6 @@ function PaymentContent() {
 
   // Evaluate registration on mount or searchParams change
   useEffect(() => {
-    // 1. If explicit URL registration params exist
     if ((urlRegistered || urlName) && urlPhone) {
       setIsRegistrationVerified(true);
       setStudentName(urlName);
@@ -84,7 +81,6 @@ function PaymentContent() {
       return;
     }
 
-    // 2. Otherwise check localStorage for active registration
     try {
       const stored = localStorage.getItem('cybernova_active_registration');
       if (stored) {
@@ -120,7 +116,7 @@ function PaymentContent() {
     });
   };
 
-  const handleLookupByPhone = (e: React.FormEvent) => {
+  const handleLookupByPhone = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLookupError(null);
     const cleaned = lookupPhone.trim().replace(/[-\s]/g, '');
@@ -161,17 +157,31 @@ function PaymentContent() {
       `Phone: ${phoneStr}\n` +
       `Course: ${selectedCourseName}\n` +
       `Amount: Rs. ${selectedFee.toLocaleString('en-PK')}\n` +
-      `Method: ${paymentMethod.toUpperCase()}\n` +
-      `Transaction ID: ${transactionId.trim() || 'Attaching screenshot'}\n` +
-      `(Attaching payment screenshot)`;
+      `Method: NBP (National Bank of Pakistan)\n` +
+      `Transaction ID: ${transactionId.trim() || 'Pending verification'}\n` +
+      `(Attaching NBP bank deposit receipt / screenshot)`;
     
     window.open(`https://wa.me/${ACADEMY_INFO.whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  const handleGenerateVoucher = (e: React.FormEvent) => {
+  const handleGenerateVoucher = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setVerificationError(null);
+
     if (!studentName.trim() || !studentPhone.trim()) {
       showToast('Please enter your full name and phone number.');
+      return;
+    }
+
+    const cleanTxn = transactionId.trim();
+
+    // Strict Bank Payment Verification Logic
+    // Validates that a numeric Transaction ID (min 10 digits) exists
+    const isValidTxnFormat = /^\d{10,16}$/.test(cleanTxn);
+
+    if (!cleanTxn || !isValidTxnFormat) {
+      setVerificationError('Fees payment not verified! Please enter a valid NBP Bank Transaction ID / Reference No. (10 to 16 digits) to generate your voucher.');
+      setVoucherGenerated(false);
       return;
     }
 
@@ -182,25 +192,23 @@ function PaymentContent() {
       studentPhone: studentPhone.trim(),
       course: selectedCourseName,
       amount: selectedFee,
-      method: paymentMethod.toUpperCase(),
-      transactionId: transactionId.trim() || 'PENDING_SLIP',
+      method: 'NBP Bank',
+      transactionId: cleanTxn,
       status: 'VERIFIED & ENROLLED'
     };
 
     setVoucherData(data);
     setVoucherGenerated(true);
-    showToast('Enrollment voucher created successfully!');
+    showToast('Payment verified & enrollment voucher created successfully!');
   };
 
-  // If user has NOT filled registration form, show clean guard
+  // Guard screen if user has NOT filled registration form
   if (!isRegistrationVerified) {
     return (
       <div className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto text-center">
         <div className="bg-[#13131e] border border-[#2a2a3a] rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-          {/* Subtle top background glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-24 bg-[#ff6584]/15 blur-3xl pointer-events-none" />
 
-          {/* Lock Icon */}
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#ff6584]/15 border border-[#ff6584]/30 text-[#ff6584] mx-auto flex items-center justify-center mb-6 shadow-xl">
             <Lock className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
@@ -217,7 +225,6 @@ function PaymentContent() {
             Fee payments can only be processed after your official registration record is submitted. This ensures your student ID, enrolled batch, and verification credentials match our records.
           </p>
 
-          {/* Action to fill form */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-10">
             <Link
               href="/#register"
@@ -235,7 +242,6 @@ function PaymentContent() {
             </Link>
           </div>
 
-          {/* Lookup alternative for previously registered users */}
           <div className="pt-8 border-t border-[#2a2a3a] text-left max-w-md mx-auto">
             <div className="text-xs font-semibold text-[#888899] uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Search className="w-3.5 h-3.5 text-[#6c63ff]" />
@@ -270,7 +276,7 @@ function PaymentContent() {
     );
   }
 
-  // If registration is verified, display full payment flow
+  // Verified student payment flow
   return (
     <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
       {/* Toast Notification */}
@@ -298,19 +304,19 @@ function PaymentContent() {
 
       {/* Header */}
       <div className="text-center mb-8 sm:mb-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#6c63ff]/15 text-[#818cf8] text-xs font-semibold uppercase tracking-wider mb-3 border border-[#6c63ff]/30">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1e88e5]/15 text-[#1e88e5] text-xs font-semibold uppercase tracking-wider mb-3 border border-[#1e88e5]/30">
           <CreditCard className="w-3.5 h-3.5" />
-          <span>Official Fee Settlement Portal</span>
+          <span>NBP Bank Official Payment Portal</span>
         </div>
         <h1 className="font-syne text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
           Course Fee Payment
         </h1>
         <p className="text-xs sm:text-sm md:text-base text-[#888899] max-w-xl mx-auto leading-relaxed">
-          Welcome <strong className="text-white">{studentName}</strong>! Please deposit your course dues using the institutional accounts below and confirm your deposit.
+          Welcome <strong className="text-white">{studentName}</strong>! Please deposit your course dues in the National Bank of Pakistan account below and enter your Transaction ID for verification.
         </p>
       </div>
 
-      {/* Verified Student Candidate Card */}
+      {/* Enrolled Candidate Details Card */}
       <div className="bg-[#13131e] border border-[#2a2a3a] rounded-2xl sm:rounded-3xl p-5 sm:p-6 mb-8 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#2a2a3a]/80">
           <div>
@@ -344,7 +350,7 @@ function PaymentContent() {
             <span className="text-white text-sm truncate block">{studentEmail || 'Registered on file'}</span>
           </div>
           <div>
-            <span className="text-[#888899] block text-[10px] uppercase">Course Fee</span>
+            <span className="text-[#888899] block text-[10px] uppercase">Course Fee Dues</span>
             <span className="font-syne text-base sm:text-lg font-black text-[#02fd88]">
               Rs. {selectedFee.toLocaleString('en-PK')}
             </span>
@@ -352,327 +358,121 @@ function PaymentContent() {
         </div>
       </div>
 
-      {/* Payment Channel Selector Tabs */}
-      <div className="mb-8">
-        <label className="block text-xs font-semibold text-[#888899] uppercase tracking-wider mb-3">
-          Select Payment Channel:
-        </label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {/* NBP */}
-          <button
-            type="button"
-            onClick={() => setPaymentMethod('nbp')}
-            className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              paymentMethod === 'nbp'
-                ? 'bg-[#1e88e5]/15 border-[#1e88e5] text-white shadow-lg shadow-[#1e88e5]/20'
-                : 'bg-[#13131e] border-[#2a2a3a] text-[#888899] hover:text-white'
-            }`}
-          >
-            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#1e88e5] mb-2" />
-            <div className="font-syne text-xs font-bold">National Bank</div>
-            <div className="text-[10px] text-[#888899]">NBP Main Account</div>
-          </button>
+      {/* Sole Payment Method Display: National Bank of Pakistan */}
+      <div className="bg-[#13131e] border border-[#1e88e5]/40 rounded-2xl sm:rounded-3xl p-5 sm:p-8 mb-8 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-[#1e88e5]/10 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Easypaisa */}
-          <button
-            type="button"
-            onClick={() => setPaymentMethod('easypaisa')}
-            className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              paymentMethod === 'easypaisa'
-                ? 'bg-[#00a651]/15 border-[#00a651] text-white shadow-lg shadow-[#00a651]/20'
-                : 'bg-[#13131e] border-[#2a2a3a] text-[#888899] hover:text-white'
-            }`}
-          >
-            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#00a651] text-white font-black text-[11px] flex items-center justify-center mb-2">
-              EP
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#2a2a3a]">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#1e88e5]/20 border border-[#1e88e5]/50 flex items-center justify-center text-[#1e88e5]">
+              <Building2 className="w-6 h-6" />
             </div>
-            <div className="font-syne text-xs font-bold">Easypaisa</div>
-            <div className="text-[10px] text-[#02fd88] font-medium">Instant Mobile</div>
-          </button>
-
-          {/* JazzCash */}
-          <button
-            type="button"
-            onClick={() => setPaymentMethod('jazzcash')}
-            className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              paymentMethod === 'jazzcash'
-                ? 'bg-[#d61f26]/15 border-[#d61f26] text-white shadow-lg shadow-[#d61f26]/20'
-                : 'bg-[#13131e] border-[#2a2a3a] text-[#888899] hover:text-white'
-            }`}
-          >
-            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#d61f26] text-white font-black text-[11px] flex items-center justify-center mb-2">
-              JC
+            <div>
+              <h3 className="font-syne text-lg sm:text-xl font-bold text-white">National Bank of Pakistan (NBP)</h3>
+              <p className="text-xs text-[#888899]">Exclusive Official Institutional Account · Mirpur Sakro Branch</p>
             </div>
-            <div className="font-syne text-xs font-bold">JazzCash</div>
-            <div className="text-[10px] text-[#888899]">All Pakistan</div>
-          </button>
+          </div>
+          <span className="self-start sm:self-auto text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full bg-[#1e88e5]/20 text-[#1e88e5] border border-[#1e88e5]/40">
+            Official Bank
+          </span>
+        </div>
 
-          {/* Meezan Bank */}
-          <button
-            type="button"
-            onClick={() => setPaymentMethod('meezan')}
-            className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              paymentMethod === 'meezan'
-                ? 'bg-[#6c63ff]/15 border-[#6c63ff] text-white shadow-lg shadow-[#6c63ff]/20'
-                : 'bg-[#13131e] border-[#2a2a3a] text-[#888899] hover:text-white'
-            }`}
-          >
-            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#6c63ff] mb-2" />
-            <div className="font-syne text-xs font-bold">Meezan Bank</div>
-            <div className="text-[10px] text-[#888899]">Online IBFT</div>
-          </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Account Title */}
+          <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Title</span>
+              <span className="font-syne text-sm sm:text-base font-bold text-white">{ACADEMY_INFO.bankAccounts.nbp.accountTitle}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.nbp.accountTitle, 'title')}
+              className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
+              title="Copy Account Title"
+            >
+              {copiedKey === 'title' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {/* Account Number */}
+          <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Number</span>
+              <span className="font-mono text-sm sm:text-base font-bold text-[#02fd88] tracking-wider">{ACADEMY_INFO.bankAccounts.nbp.accountNumber}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.nbp.accountNumber, 'acc')}
+              className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
+              title="Copy Account Number"
+            >
+              {copiedKey === 'acc' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {/* IBAN */}
+          <div className="md:col-span-2 p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">IBAN (All 1Link / Raast Transfers)</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-white break-all">{ACADEMY_INFO.bankAccounts.nbp.iban}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.nbp.iban, 'iban')}
+              className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors shrink-0 ml-2 cursor-pointer"
+              title="Copy IBAN"
+            >
+              {copiedKey === 'iban' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Account Details Display Card */}
-      <div className="bg-[#13131e] border border-[#2a2a3a] rounded-2xl sm:rounded-3xl p-5 sm:p-8 mb-8 shadow-2xl">
-        {paymentMethod === 'nbp' && (
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-[#2a2a3a]">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#1e88e5]/20 border border-[#1e88e5]/40 flex items-center justify-center text-[#1e88e5]">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-syne text-base sm:text-lg font-bold text-white">National Bank of Pakistan (NBP)</h3>
-                  <p className="text-xs text-[#888899]">Official Institutional Account · Mirpur Sakro Branch</p>
-                </div>
-              </div>
-              <span className="self-start sm:self-auto text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-[#1e88e5]/20 text-[#1e88e5] border border-[#1e88e5]/30">
-                Primary Account
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Account Title */}
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Title</span>
-                  <span className="font-syne text-sm sm:text-base font-bold text-white">{ACADEMY_INFO.bankAccounts.nbp.accountTitle}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.nbp.accountTitle, 'title')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                  title="Copy Account Title"
-                >
-                  {copiedKey === 'title' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-
-              {/* Account Number */}
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Number</span>
-                  <span className="font-mono text-sm sm:text-base font-bold text-[#02fd88] tracking-wider">{ACADEMY_INFO.bankAccounts.nbp.accountNumber}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.nbp.accountNumber, 'acc')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                  title="Copy Account Number"
-                >
-                  {copiedKey === 'acc' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-
-              {/* IBAN */}
-              <div className="md:col-span-2 p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">IBAN (All 1Link / Raast Transfers)</span>
-                  <span className="font-mono text-xs sm:text-sm font-bold text-white break-all">{ACADEMY_INFO.bankAccounts.nbp.iban}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.nbp.iban, 'iban')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors shrink-0 ml-2 cursor-pointer"
-                  title="Copy IBAN"
-                >
-                  {copiedKey === 'iban' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {paymentMethod === 'easypaisa' && (
-          <div>
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#2a2a3a]">
-              <div className="w-10 h-10 rounded-xl bg-[#00a651]/20 border border-[#00a651]/40 flex items-center justify-center text-[#00a651] font-black text-xs">
-                EP
-              </div>
-              <div>
-                <h3 className="font-syne text-base sm:text-lg font-bold text-white">Easypaisa Mobile Account</h3>
-                <p className="text-xs text-[#888899]">Instant mobile wallet transfer (No fees)</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Title</span>
-                  <span className="font-syne text-sm sm:text-base font-bold text-white">{ACADEMY_INFO.bankAccounts.easypaisa.accountTitle}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.easypaisa.accountTitle, 'ep_title')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                >
-                  {copiedKey === 'ep_title' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Mobile Number</span>
-                  <span className="font-mono text-sm sm:text-base font-bold text-[#02fd88]">{ACADEMY_INFO.bankAccounts.easypaisa.mobileNumber}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.easypaisa.mobileNumber, 'ep_mob')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                >
-                  {copiedKey === 'ep_mob' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {paymentMethod === 'jazzcash' && (
-          <div>
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#2a2a3a]">
-              <div className="w-10 h-10 rounded-xl bg-[#d61f26]/20 border border-[#d61f26]/40 flex items-center justify-center text-[#d61f26] font-black text-xs">
-                JC
-              </div>
-              <div>
-                <h3 className="font-syne text-base sm:text-lg font-bold text-white">JazzCash Account</h3>
-                <p className="text-xs text-[#888899]">Transfer via JazzCash App or any retailer across Pakistan</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Title</span>
-                  <span className="font-syne text-sm sm:text-base font-bold text-white">{ACADEMY_INFO.bankAccounts.jazzcash.accountTitle}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.jazzcash.accountTitle, 'jc_title')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                >
-                  {copiedKey === 'jc_title' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Mobile Number</span>
-                  <span className="font-mono text-sm sm:text-base font-bold text-[#02fd88]">{ACADEMY_INFO.bankAccounts.jazzcash.mobileNumber}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.jazzcash.mobileNumber, 'jc_mob')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                >
-                  {copiedKey === 'jc_mob' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {paymentMethod === 'meezan' && (
-          <div>
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#2a2a3a]">
-              <div className="w-10 h-10 rounded-xl bg-[#6c63ff]/20 border border-[#6c63ff]/40 flex items-center justify-center text-[#6c63ff]">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-syne text-base sm:text-lg font-bold text-white">Meezan Bank Limited</h3>
-                <p className="text-xs text-[#888899]">Islamic Banking · Free Inter-Bank Fund Transfer (IBFT)</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Title</span>
-                  <span className="font-syne text-sm sm:text-base font-bold text-white">{ACADEMY_INFO.bankAccounts.meezan.accountTitle}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.meezan.accountTitle, 'mz_title')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                >
-                  {copiedKey === 'mz_title' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">Account Number</span>
-                  <span className="font-mono text-sm sm:text-base font-bold text-[#02fd88]">{ACADEMY_INFO.bankAccounts.meezan.accountNumber}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.meezan.accountNumber, 'mz_acc')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors cursor-pointer"
-                >
-                  {copiedKey === 'mz_acc' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-
-              <div className="md:col-span-2 p-4 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#888899] tracking-wider block">IBAN</span>
-                  <span className="font-mono text-xs sm:text-sm font-bold text-white break-all">{ACADEMY_INFO.bankAccounts.meezan.iban}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(ACADEMY_INFO.bankAccounts.meezan.iban, 'mz_iban')}
-                  className="p-2 rounded-lg bg-[#252538] hover:bg-[#2f2f48] text-[#888899] hover:text-white transition-colors shrink-0 ml-2 cursor-pointer"
-                >
-                  {copiedKey === 'mz_iban' ? <Check className="w-4 h-4 text-[#02fd88]" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Confirmation & Voucher Generation Box */}
+      {/* Payment Verification & Voucher Generation Box */}
       <div className="bg-[#13131e] border border-[#2a2a3a] rounded-2xl sm:rounded-3xl p-5 sm:p-8 mb-12 shadow-2xl">
         <h3 className="font-syne text-lg font-bold text-white mb-2 flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-[#02fd88]" />
-          <span>Confirm Payment & Generate Voucher</span>
+          <span>Verify Bank Payment & Generate Voucher</span>
         </h3>
         <p className="text-xs sm:text-sm text-[#888899] mb-6 leading-relaxed">
-          After completing your transfer, enter the Transaction ID / Reference Number provided by your bank or mobile app.
+          After completing your NBP deposit, enter the Transaction ID / Reference Number from your bank receipt or SMS to verify fee payment and issue your voucher.
         </p>
+
+        {verificationError && (
+          <div className="p-3.5 mb-5 rounded-xl bg-[#ff6584]/15 border border-[#ff6584]/40 text-[#ff6584] text-xs sm:text-sm font-semibold flex items-center gap-2.5 animate-fade-in">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <span>{verificationError}</span>
+          </div>
+        )}
 
         <form onSubmit={handleGenerateVoucher} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-[#888899] uppercase tracking-wider mb-1.5">
-              Transaction ID / TID / Reference No.
+              NBP Transaction ID / TID / Reference No. <span className="text-[#ff6584]">*</span>
             </label>
             <input
               type="text"
               value={transactionId}
-              onChange={(e) => setTransactionId(e.target.value)}
-              placeholder="e.g. 1029384756 (from your bank SMS or app receipt)"
-              className="w-full px-4 py-3 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] text-white font-mono text-sm focus:outline-none focus:border-[#6c63ff] transition-colors"
+              onChange={(e) => {
+                setTransactionId(e.target.value);
+                if (verificationError) setVerificationError(null);
+              }}
+              placeholder="e.g. 102938475612 (from NBP deposit receipt or SMS)"
+              required
+              className="w-full px-4 py-3 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] text-white font-mono text-sm focus:outline-none focus:border-[#1e88e5] transition-colors"
             />
+            <p className="text-[11px] text-[#888899] mt-1">
+              Enter 10 to 16 digit numeric ID provided by National Bank of Pakistan.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <button
               type="submit"
-              className="py-3.5 px-4 rounded-xl bg-[#6c63ff] hover:bg-[#5b52e0] text-white font-bold text-sm transition-all shadow-xl shadow-[#6c63ff]/30 hover:shadow-[#6c63ff]/50 cursor-pointer flex items-center justify-center gap-2"
+              className="py-3.5 px-4 rounded-xl bg-[#1e88e5] hover:bg-[#1976d2] text-white font-bold text-sm transition-all shadow-xl shadow-[#1e88e5]/30 hover:shadow-[#1e88e5]/50 cursor-pointer flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
-              <span>Generate Student Voucher</span>
+              <span>Verify Fee & Generate Voucher</span>
             </button>
 
             <button
@@ -681,7 +481,7 @@ function PaymentContent() {
               className="py-3.5 px-4 rounded-xl bg-[#00a651] hover:bg-[#009247] text-white font-bold text-sm transition-all shadow-xl shadow-[#00a651]/30 hover:shadow-[#00a651]/50 cursor-pointer flex items-center justify-center gap-2"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>Confirm on WhatsApp Desk</span>
+              <span>Send Deposit Slip on WhatsApp</span>
             </button>
           </div>
         </form>
@@ -691,7 +491,7 @@ function PaymentContent() {
           <div className="mt-8 pt-6 border-t border-[#2a2a3a] animate-fade-in">
             <div
               id="payment-voucher-area"
-              className="p-6 sm:p-8 rounded-2xl bg-white text-[#111118] font-sans border-4 border-dashed border-[#d4af37] shadow-2xl relative"
+              className="p-6 sm:p-8 rounded-2xl bg-white text-[#111118] font-sans border-4 border-dashed border-[#1e88e5] shadow-2xl relative"
             >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b-2 border-slate-200 pb-4 mb-4">
                 <div>
@@ -699,12 +499,12 @@ function PaymentContent() {
                     CYBER NOVA COMPUTER ACADEMY
                   </h4>
                   <p className="text-xs text-slate-500 font-medium">
-                    Admission Fee Deposit Voucher · Official Receipt
+                    Admission Fee Deposit Voucher · Official Bank Receipt
                   </p>
                 </div>
                 <div className="text-left sm:text-right">
                   <span className="text-[10px] font-mono text-slate-400 block">VOUCHER NO</span>
-                  <span className="font-mono text-sm font-black text-[#6c63ff]">{voucherData.receiptNo}</span>
+                  <span className="font-mono text-sm font-black text-[#1e88e5]">{voucherData.receiptNo}</span>
                 </div>
               </div>
 
@@ -714,16 +514,16 @@ function PaymentContent() {
                   <strong className="text-slate-800">{voucherData.date}</strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Channel</span>
-                  <strong className="text-slate-800">{voucherData.method}</strong>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Bank Channel</span>
+                  <strong className="text-[#1e88e5] font-bold">{voucherData.method}</strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Txn Reference</span>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">NBP Txn ID</span>
                   <strong className="text-slate-800 font-mono">{voucherData.transactionId}</strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Status</span>
-                  <strong className="text-[#00a651] font-bold">REGISTERED</strong>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Payment Status</span>
+                  <strong className="text-[#00a651] font-bold">VERIFIED & PAID</strong>
                 </div>
               </div>
 
@@ -741,14 +541,14 @@ function PaymentContent() {
                   <span className="font-bold text-slate-900">{voucherData.course}</span>
                 </div>
                 <div className="flex justify-between items-baseline pt-2 text-sm font-bold text-slate-900 border-t border-slate-200">
-                  <span>Total Fee Paid:</span>
+                  <span>Total Fee Cleared:</span>
                   <span className="text-lg font-black text-[#00a651]">Rs. {voucherData.amount.toLocaleString()}</span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center text-[10px] text-slate-400">
-                <span>Verified by Cyber Nova Admission Desk</span>
-                <span>Karachi, Pakistan</span>
+                <span>Verified via NBP Settlement Portal</span>
+                <span>Cyber Nova Admission Desk</span>
               </div>
             </div>
 

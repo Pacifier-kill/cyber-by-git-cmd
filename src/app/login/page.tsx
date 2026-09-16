@@ -3,13 +3,13 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { 
-  GraduationCap, 
-  Mail, 
-  Lock, 
-  ArrowRight, 
-  ShieldCheck, 
-  User, 
+import {
+  GraduationCap,
+  Mail,
+  Lock,
+  ArrowRight,
+  ShieldCheck,
+  User,
   SlidersHorizontal,
   CheckCircle2,
   AlertCircle,
@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
+import { text } from 'stream/consumers';
 
 function LoginContent() {
   const router = useRouter();
@@ -31,50 +32,50 @@ function LoginContent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!email.trim()) {
+    const trimmedIdentifier = email.trim();
+
+    if (!trimmedIdentifier) {
       setError('Please enter your email or username.');
       return;
     }
-    if (!password || password.length < 4) {
-      setError('Password must be at least 4 characters.');
-      return;
-    }
 
-    login(email, role);
-    setSuccess(true);
-    setTimeout(() => {
-      if (role === 'admin' || email.toLowerCase().includes('admin')) {
-        router.push('/admin');
-      } else {
-        router.push(redirectPath);
+    if (role === 'admin') {
+      // Strictly validate Admin credentials:
+      // Username: 'Zayan' OR 'cybernova@gmail.com'
+      // Password: 'admin123'
+      const isValidAdminUser =
+        trimmedIdentifier === 'Zayan' ||
+        trimmedIdentifier.toLowerCase() === 'cybernova@gmail.com';
+      const isValidAdminPass = password === 'admin123';
+
+      if (!isValidAdminUser || !isValidAdminPass) {
+        setError('Invalid Admin credentials. Please check your username and password.');
+        return;
       }
-    }, 600);
-  };
 
-  const handleQuickDemoAdmin = () => {
-    setEmail('admin@cybernova.edu.pk');
-    setPassword('admin2026');
-    setRole('admin');
-    login('admin@cybernova.edu.pk', 'admin', 'Academy Admin');
-    setSuccess(true);
-    setTimeout(() => {
-      router.push('/admin');
-    }, 500);
-  };
+      // Valid admin
+      login('admin@cybernova.edu.pk', 'admin', 'Academy Admin');
+      setSuccess(true);
+      setTimeout(() => {
+        router.push('/admin');
+      }, 600);
+    } else {
+      // Student Login Flow
+      if (!password || password.length < 4) {
+        setError('Password must be at least 4 characters.');
+        return;
+      }
 
-  const handleQuickDemoStudent = () => {
-    setEmail('student@cybernova.edu.pk');
-    setPassword('student123');
-    setRole('student');
-    login('student@cybernova.edu.pk', 'student', 'Bilal Khan');
-    setSuccess(true);
-    setTimeout(() => {
-      router.push('/');
-    }, 500);
+      login(email, role);
+      setSuccess(true);
+      setTimeout(() => {
+        router.push(redirectPath);
+      }, 600);
+    }
   };
 
   return (
@@ -119,22 +120,20 @@ function LoginContent() {
           <button
             type="button"
             onClick={() => setRole('student')}
-            className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              role === 'student'
+            className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${role === 'student'
                 ? 'bg-[#6c63ff] text-white shadow-md'
                 : 'text-[#888899] hover:text-white'
-            }`}
+              }`}
           >
             Student Account
           </button>
           <button
             type="button"
             onClick={() => setRole('admin')}
-            className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              role === 'admin'
+            className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${role === 'admin'
                 ? 'bg-[#6c63ff] text-white shadow-md'
                 : 'text-[#888899] hover:text-white'
-            }`}
+              }`}
           >
             Academy Admin
           </button>
@@ -148,10 +147,10 @@ function LoginContent() {
             </label>
             <div className="relative">
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={role === 'admin' ? 'admin@cybernova.edu.pk' : 'student@example.com'}
+                placeholder={role === 'admin' ? 'Enter admin username or Email' : 'Enter your email or username'}
                 required
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] text-white text-sm focus:outline-none focus:border-[#6c63ff] transition-colors"
               />
@@ -192,32 +191,6 @@ function LoginContent() {
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
-
-        {/* Quick Demo Logins for Instant Testing */}
-        <div className="mt-6 pt-5 border-t border-[#2a2a3a]">
-          <div className="text-[11px] font-semibold text-[#888899] mb-2 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#f59e0b]" />
-            <span>Instant Demo Access (1-Click):</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={handleQuickDemoAdmin}
-              className="px-2.5 py-2 rounded-lg bg-[#1a1a26] hover:bg-[#252538] border border-[#6c63ff]/40 text-xs font-semibold text-[#818cf8] transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#6c63ff]" />
-              <span>Admin Demo</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleQuickDemoStudent}
-              className="px-2.5 py-2 rounded-lg bg-[#1a1a26] hover:bg-[#252538] border border-[#2a2a3a] text-xs font-semibold text-white transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <User className="w-3.5 h-3.5 text-[#02fd88]" />
-              <span>Student Demo</span>
-            </button>
-          </div>
-        </div>
 
         {/* Signup Link */}
         <div className="mt-6 text-center text-xs text-[#888899]">

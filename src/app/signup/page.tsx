@@ -3,14 +3,14 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
-  GraduationCap, 
-  Mail, 
-  Lock, 
-  User, 
-  Phone, 
-  ArrowRight, 
-  CheckCircle2, 
+import {
+  GraduationCap,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  ArrowRight,
+  CheckCircle2,
   AlertCircle,
   ShieldCheck,
   Sparkles
@@ -114,29 +114,15 @@ function SignUpContent() {
         )}
 
         {/* Role Tab */}
-        <div className="grid grid-cols-2 gap-2 p-1 bg-[#1a1a26] rounded-xl border border-[#2a2a3a] mb-5">
-          <button
-            type="button"
-            onClick={() => setRole('student')}
-            className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              role === 'student'
-                ? 'bg-[#6c63ff] text-white shadow-md'
-                : 'text-[#888899] hover:text-white'
-            }`}
-          >
-            Student Account
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('admin')}
-            className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              role === 'admin'
-                ? 'bg-[#6c63ff] text-white shadow-md'
-                : 'text-[#888899] hover:text-white'
-            }`}
-          >
-            Faculty / Admin
-          </button>
+        <div className="flex justify-center mb-5">
+          <div className="p-1 bg-[#1a1a26] rounded-xl border border-[#2a2a3a] inline-flex">
+            <button
+              type="button"
+              onClick={() => setRole('student')}
+              className="px-6 py-2 rounded-lg text-xs font-semibold bg-[#6c63ff] text-white shadow-md transition-all cursor-pointer">
+              Student Account
+            </button>
+          </div>
         </div>
 
         {/* Form */}

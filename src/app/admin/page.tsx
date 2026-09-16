@@ -3,21 +3,21 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
-  ShieldAlert, 
-  SlidersHorizontal, 
-  Plus, 
-  Edit3, 
-  Trash2, 
-  Save, 
-  RefreshCw, 
-  CheckCircle2, 
-  Users, 
-  BookOpen, 
-  DollarSign, 
-  TrendingUp, 
-  Search, 
-  X, 
+import {
+  ShieldAlert,
+  SlidersHorizontal,
+  Plus,
+  Edit3,
+  Trash2,
+  Save,
+  RefreshCw,
+  CheckCircle2,
+  Users,
+  BookOpen,
+  DollarSign,
+  TrendingUp,
+  Search,
+  X,
   ArrowLeft,
   Key,
   GraduationCap,
@@ -39,7 +39,7 @@ function AdminContent() {
   const router = useRouter();
   const { courses, updateCourseFee, updateCourse, addCourse, deleteCourse, resetCourses } = useCourses();
   const { user, isAdmin, login } = useAuth();
-
+  const [adminusername, setAdminUsername] = useState('');
   const [adminPasscode, setAdminPasscode] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -85,14 +85,18 @@ function AdminContent() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  const handleAdminUnlock = (e: React.FormEvent) => {
+  const handleAdminUnlock = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setAuthError(null);
-    if (adminPasscode === 'admin2026' || adminPasscode === 'cybernova' || adminPasscode === 'admin') {
+
+    const isValidUsername = adminusername.trim() === 'Zayan' || adminusername.trim() === 'cybernova@gmail.com';
+    const isValidPassword = adminPasscode === 'admin123';
+
+    if (isValidUsername && isValidPassword) {
       login('admin@cybernova.edu.pk', 'admin', 'Academy Admin');
       showToast('Admin mode granted!');
     } else {
-      setAuthError('Invalid Admin Passcode. Use default demo passcode: admin2026');
+      setAuthError('Invalid Admin Credentials. Please enter valid username and password.');
     }
   };
 
@@ -184,7 +188,7 @@ function AdminContent() {
     }
   };
 
-  const filteredCourses = courses.filter(c => 
+  const filteredCourses = courses.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.categoryTag.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -215,12 +219,27 @@ function AdminContent() {
           )}
 
           <form onSubmit={handleAdminUnlock} className="space-y-3 mb-6">
+            {/* Username Input */}
+            <div className="relative">
+              <input
+                type="text"
+                value={adminusername}
+                onChange={(e) => setAdminUsername(e.target.value)}
+                placeholder="Username or Email"
+                required
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] text-white text-sm focus:outline-none focus:border-[#6c63ff]"
+              />
+              <Users className="w-4 h-4 text-[#888899] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            </div>
+
+            {/* Password Input */}
             <div className="relative">
               <input
                 type="password"
                 value={adminPasscode}
                 onChange={(e) => setAdminPasscode(e.target.value)}
-                placeholder="Enter Admin Passcode (demo: admin2026)"
+                placeholder="Enter Admin Password"
+                required
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1a1a26] border border-[#2a2a3a] text-white text-sm focus:outline-none focus:border-[#6c63ff]"
               />
               <Key className="w-4 h-4 text-[#888899] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -348,9 +367,8 @@ function AdminContent() {
         <div className="flex items-center gap-6">
           <button
             onClick={() => setActiveTab('courses')}
-            className={`pb-3 text-sm font-bold transition-all relative cursor-pointer ${
-              activeTab === 'courses' ? 'text-white' : 'text-[#888899] hover:text-white'
-            }`}
+            className={`pb-3 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'courses' ? 'text-white' : 'text-[#888899] hover:text-white'
+              }`}
           >
             <span>Courses Catalog ({courses.length})</span>
             {activeTab === 'courses' && (
@@ -360,9 +378,8 @@ function AdminContent() {
 
           <button
             onClick={() => setActiveTab('registrations')}
-            className={`pb-3 text-sm font-bold transition-all relative cursor-pointer ${
-              activeTab === 'registrations' ? 'text-white' : 'text-[#888899] hover:text-white'
-            }`}
+            className={`pb-3 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'registrations' ? 'text-white' : 'text-[#888899] hover:text-white'
+              }`}
           >
             <span>Student Submissions ({registrations.length})</span>
             {activeTab === 'registrations' && (
@@ -408,7 +425,7 @@ function AdminContent() {
                       {/* Name & ID */}
                       <td className="py-4 px-4 sm:px-6">
                         <div className="flex items-center gap-3">
-                          <div 
+                          <div
                             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                             style={{ backgroundColor: `${course.accentColor}25`, color: course.accentColor }}
                           >
@@ -427,7 +444,7 @@ function AdminContent() {
 
                       {/* Category */}
                       <td className="py-4 px-4 whitespace-nowrap">
-                        <span 
+                        <span
                           className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
                           style={{ backgroundColor: `${course.accentColor}20`, color: course.accentColor }}
                         >

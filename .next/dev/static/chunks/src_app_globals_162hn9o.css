@@ -802,6 +802,10 @@
     height: calc(var(--spacing) * 40);
   }
 
+  .h-48 {
+    height: calc(var(--spacing) * 48);
+  }
+
   .h-\[2px\] {
     height: 2px;
   }
@@ -1303,6 +1307,11 @@
     border-color: lab(54.75% -2.90382 -56.2141 / .4);
   }
 
+  .border-\[\#1e88e5\]\/50 {
+    border-color: #1e88e580;
+    border-color: lab(54.75% -2.90382 -56.2141 / .5);
+  }
+
   .border-\[\#2a2a3a\] {
     border-color: #2a2a3a;
   }
@@ -1515,6 +1524,15 @@
   .bg-\[\#1a1a26\]\/90 {
     background-color: #1a1a26e6;
     background-color: lab(9.7029% 2.63372 -8.25866 / .9);
+  }
+
+  .bg-\[\#1e88e5\] {
+    background-color: #1e88e5;
+  }
+
+  .bg-\[\#1e88e5\]\/10 {
+    background-color: #1e88e51a;
+    background-color: lab(54.75% -2.90382 -56.2141 / .1);
   }
 
   .bg-\[\#1e88e5\]\/15 {
@@ -2721,6 +2739,16 @@
     }
   }
 
+  .shadow-\[\#1e88e5\]\/30 {
+    --tw-shadow-color: #1e88e54d;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .shadow-\[\#1e88e5\]\/30 {
+      --tw-shadow-color: color-mix(in oklab, lab(54.75% -2.90382 -56.2141 / .3) var(--tw-shadow-alpha), transparent);
+    }
+  }
+
   .shadow-\[\#6c63ff\]\/20 {
     --tw-shadow-color: #6c63ff33;
   }
@@ -3010,6 +3038,10 @@
       background-color: #5b52e0;
     }
 
+    .hover\:bg-\[\#1976d2\]:hover {
+      background-color: #1976d2;
+    }
+
     .hover\:bg-\[\#009146\]:hover {
       background-color: #009146;
     }
@@ -3082,6 +3114,16 @@
       }
     }
 
+    .hover\:shadow-\[\#1e88e5\]\/50:hover {
+      --tw-shadow-color: #1e88e580;
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:shadow-\[\#1e88e5\]\/50:hover {
+        --tw-shadow-color: color-mix(in oklab, lab(54.75% -2.90382 -56.2141 / .5) var(--tw-shadow-alpha), transparent);
+      }
+    }
+
     .hover\:shadow-\[\#6c63ff\]\/10:hover {
       --tw-shadow-color: #6c63ff1a;
     }
@@ -3105,6 +3147,10 @@
 
   .focus\:border-\[\#00a651\]:focus {
     border-color: #00a651;
+  }
+
+  .focus\:border-\[\#1e88e5\]:focus {
+    border-color: #1e88e5;
   }
 
   .focus\:border-\[\#6c63ff\]:focus {
